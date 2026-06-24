@@ -943,3 +943,209 @@ body::before {
     background: var(--gradient-primary) !important;
     color: white !important;
 }
+/* ============================================================
+   COURSE IMAGES FIX
+   ============================================================ */
+
+.course-image {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #6C3CE1, #EC4899);
+}
+
+.course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-image img[src*="default-course.jpg"] {
+    object-fit: contain;
+    padding: 20px;
+    background: linear-gradient(135deg, #f0f0ff, #e8e0f0);
+}
+
+.course-level {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+}
+
+.course-badge.free {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+/* ============================================================
+   COURSE IMAGES - FAST LOADING
+   ============================================================ */
+
+.course-image {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #6C3CE1, #EC4899);
+}
+
+.course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.course-image img[src*="default-course.jpg"] {
+    object-fit: contain;
+    padding: 30px;
+    background: linear-gradient(135deg, #f5f0ff, #e8e0f0);
+}
+
+.course-level {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+}
+
+.course-badge.free {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+/* ============================================================
+   COURSE CARDS - NO IMAGES NEEDED
+   ============================================================ */
+
+.course-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    height: 100%;
+    box-shadow: var(--shadow);
+}
+
+.course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.course-image {
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.course-image i {
+    font-size: 4rem;
+    opacity: 0.9;
+}
+
+.course-level {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+}
+
+.course-badge.free {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.course-body {
+    padding: 20px;
+}
+
+.course-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.course-title a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.course-title a:hover {
+    color: var(--primary);
+}
+
+.course-instructor {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.course-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.course-price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.course-rating {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.course-rating i {
+    color: #F59E0B;
+}

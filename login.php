@@ -3,6 +3,7 @@ $page_title = 'Login';
 require_once 'config/database.php';
 require_once 'includes/header.php';
 
+// If already logged in, redirect to dashboard
 if (isLoggedIn()) {
     redirect('dashboard.php');
 }
@@ -23,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $error = 'Please enter email and password!';
     } else {
+        // Get user with all details including verification status
         $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ?");
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
@@ -30,21 +32,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = mysqli_fetch_assoc($result);
         mysqli_stmt_close($stmt);
         
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['first_name'] = $user['first_name'];
-            $_SESSION['last_name'] = $user['last_name'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'];
-            
-            if ($user['role'] === 'admin') {
-                redirect('admin/index.php');
+        if ($user) {
+            // Verify password
+            if (password_verify($password, $user['password'])) {
+                // Check if email is verified
+                if ($user['is_verified'] == 0) {
+                    $_SESSION['temp_email'] = $email;
+                    $error = '⚠️ Please verify your email first. A verification link was sent to your email. <a href="verify-otp.php" class="fw-bold">Verify Now</a>';
+                } else {
+                    // Login successful - set session
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['first_name'] = $user['first_name'];
+                    $_SESSION['last_name'] = $user['last_name'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role'];
+                    
+                    // Redirect based on role
+                    if ($user['role'] === 'admin') {
+                        redirect('admin/index.php');
+                    } else {
+                        redirect('dashboard.php');
+                    }
+                    exit();
+                }
             } else {
-                redirect('dashboard.php');
+                $error = '❌ Invalid password!';
             }
-            exit();
         } else {
-            $error = 'Invalid email or password!';
+            $error = '❌ User not found! Please register first.';
         }
     }
 }
@@ -72,12 +87,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form method="POST" action="">
                     <div class="mb-3">
                         <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+                        </div>
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+                        </div>
                     </div>
+                    
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-sign-in-alt me-2"></i>Login
                     </button>

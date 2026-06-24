@@ -2,6 +2,7 @@
 $page_title = 'Register';
 require_once 'config/database.php';
 require_once 'includes/header.php';
+require_once 'includes/send-email.php';
 
 if (isLoggedIn()) {
     redirect('dashboard.php');
@@ -26,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm_password) {
         $error = 'Passwords do not match!';
     } else {
+        // Check if email exists
         $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
@@ -34,16 +36,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_stmt_num_rows($stmt) > 0) {
             $error = 'Email already registered!';
         } else {
+            // Generate OTP
+            $otp = rand(100000, 999999);
+            $otp_expires = date('Y-m-d H:i:s', strtotime('+30 minutes'));
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $role = 'student';
             
-            $stmt = mysqli_prepare($conn, "INSERT INTO users (first_name, last_name, email, password, role, is_verified) VALUES (?, ?, ?, ?, ?, 1)");
-            mysqli_stmt_bind_param($stmt, "sssssi", $first_name, $last_name, $email, $hashed_password, $role, 1);
+            // Insert user with OTP
+            $stmt = mysqli_prepare($conn, "INSERT INTO users (first_name, last_name, email, password, role, otp, otp_expires) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, "sssssss", $first_name, $last_name, $email, $hashed_password, $role, $otp, $otp_expires);
             
             if (mysqli_stmt_execute($stmt)) {
-                $_SESSION['registration_success'] = 'Registration successful! Please login.';
-                header('Location: login.php');
-                exit();
+                // Store email in session
+                $_SESSION['temp_email'] = $email;
+                $_SESSION['last_otp'] = $otp;
+                
+                // Send OTP via email ONLY - NOT displayed on screen
+                $mail_sent = sendOTPEmail($email, $otp, $first_name);
+                
+                $success = '✅ Registration successful!<br>';
+                
+                if ($mail_sent) {
+                    $success .= '✅ A 6-digit OTP has been sent to your email: <strong>' . htmlspecialchars($email) . '</strong><br>';
+                    $success .= '📬 Please check your inbox or <strong>Spam folder</strong>.<br>';
+                    $success .= '⏳ This OTP is valid for 30 minutes.<br>';
+                    $success .= '🔄 Redirecting to verification page...';
+                } else {
+                    $success .= '❌ Could not send email. Please check your email address.<br>';
+                    $success .= '📧 Email: <strong>' . htmlspecialchars($email) . '</strong><br>';
+                    $success .= '🔄 Please <a href="register.php">try again</a> or contact support.<br>';
+                    $success .= '⚠️ Make sure your email is correct and try again.';
+                }
+                
+                echo '<meta http-equiv="refresh" content="5;url=verify-otp.php">';
             } else {
                 $error = 'Registration failed. Please try again.';
             }
@@ -67,6 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <?php if ($error): ?>
                     <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php endif; ?>
+                <?php if ($success): ?>
+                    <div class="alert alert-success"><?php echo $success; ?></div>
                 <?php endif; ?>
 
                 <form method="POST" action="">

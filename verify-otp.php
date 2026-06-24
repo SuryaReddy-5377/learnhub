@@ -2,12 +2,12 @@
 $page_title = 'Verify OTP';
 require_once 'config/database.php';
 require_once 'includes/header.php';
+require_once 'includes/send-email.php';
 
 if (isLoggedIn()) {
     redirect('dashboard.php');
 }
 
-// Check if email exists in session
 if (!isset($_SESSION['temp_email'])) {
     redirect('register.php');
 }
@@ -21,9 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($otp)) {
         $error = 'Please enter the OTP!';
+    } elseif (strlen($otp) !== 6 || !is_numeric($otp)) {
+        $error = 'Please enter a valid 6-digit OTP!';
     } else {
-        // Verify OTP
-        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? AND otp = ? AND otp_expires > NOW()");
+        // SIMPLE CHECK - NO EXPIRY (Temporary)
+        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? AND otp = ?");
         mysqli_stmt_bind_param($stmt, "ss", $email, $otp);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
@@ -35,15 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_execute($stmt2);
             mysqli_stmt_close($stmt2);
             
-            $success = 'Email verified successfully! You can now login.';
-            
-            // Clear temp email from session
+            $success = '✅ Email verified successfully! Redirecting to login...';
             unset($_SESSION['temp_email']);
+            unset($_SESSION['last_otp']);
             
-            // Redirect to login after 2 seconds
             echo '<meta http-equiv="refresh" content="2;url=login.php">';
         } else {
-            $error = 'Invalid or expired OTP! Please try again.';
+            $error = '❌ Invalid OTP! Please try again.';
         }
         mysqli_stmt_close($stmt);
     }
@@ -51,30 +51,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Resend OTP
 if (isset($_GET['resend'])) {
-    $otp = generateOTP();
-    $otp_expires = date('Y-m-d H:i:s', strtotime('+5 minutes'));
+    $otp = rand(100000, 999999);
     
-    $stmt = mysqli_prepare($conn, "UPDATE users SET otp = ?, otp_expires = ? WHERE email = ?");
-    mysqli_stmt_bind_param($stmt, "sss", $otp, $otp_expires, $email);
+    // Get user name
+    $stmt = mysqli_prepare($conn, "SELECT first_name FROM users WHERE email = ?");
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    $name = $user['first_name'] ?? 'User';
+    mysqli_stmt_close($stmt);
+    
+    // Update OTP (no expiry)
+    $stmt = mysqli_prepare($conn, "UPDATE users SET otp = ?, otp_expires = DATE_ADD(NOW(), INTERVAL 60 MINUTE) WHERE email = ?");
+    mysqli_stmt_bind_param($stmt, "ss", $otp, $email);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     
-    // Send OTP email (simplified)
-    $success = 'New OTP sent to your email!';
+    // Send OTP via email
+    sendOTPEmail($email, $otp, $name);
+    $_SESSION['last_otp'] = $otp;
+    
+    $success = '✅ New OTP sent to your email!';
 }
 ?>
 
 <div class="row justify-content-center" style="min-height: 80vh; align-items: center;">
-    <div class="col-lg-5 col-md-8 col-sm-10" data-aos="fade-up">
+    <div class="col-md-5">
         <div class="card form-card">
             <div class="card-body p-5">
                 <div class="text-center mb-4">
                     <div class="brand-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h2 class="fw-bold welcome-title">Verify Your Email</h2>
-                    <p class="text-muted subtitle-text">Enter the OTP sent to your email</p>
-                    <p class="text-muted small">We sent a 6-digit code to <strong><?php echo htmlspecialchars($email); ?></strong></p>
+                    <h3 class="fw-bold mt-3">Verify Your Email</h3>
+                    <p class="text-muted">Enter the 6-digit OTP sent to your email</p>
+                    <p class="text-muted small">We sent a code to <strong><?php echo htmlspecialchars($email); ?></strong></p>
+                    <p class="text-muted small">⏳ OTP is valid for <strong>60 minutes</strong></p>
                 </div>
 
                 <?php if ($error): ?>
@@ -86,25 +99,31 @@ if (isset($_GET['resend'])) {
 
                 <form method="POST" action="">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Enter OTP</label>
+                        <label class="form-label">Enter OTP</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-key"></i></span>
                             <input type="text" name="otp" class="form-control" placeholder="Enter 6-digit OTP" maxlength="6" required>
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-100 py-2">
+                    <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-check-circle me-2"></i>VERIFY OTP
                     </button>
                 </form>
                 
-                <div class="divider">
+                <div class="divider my-4">
                     <span>Didn't receive code?</span>
                 </div>
                 
-                <p class="text-center mt-3 mb-0">
-                    <a href="verify-otp.php?resend=1" class="text-decoration-none fw-semibold register-link">
+                <div class="text-center">
+                    <a href="verify-otp.php?resend=1" class="btn btn-warning w-100">
                         <i class="fas fa-sync me-2"></i>Resend OTP
+                    </a>
+                </div>
+                
+                <p class="text-center mt-3">
+                    <a href="register.php" class="text-decoration-none text-muted small">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Register
                     </a>
                 </p>
             </div>

@@ -62,6 +62,17 @@ mysqli_stmt_close($stmt);
 
 // Get categories for filter
 $categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY name");
+
+// Color palette for course cards
+$colors = [
+    '#6C3CE1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444',
+    '#8B5CF6', '#34D399', '#F472B6', '#FBBF24', '#60A5FA', '#F87171'
+];
+$icons = [
+    'fa-code', 'fa-chart-bar', 'fa-mobile-alt', 'fa-cloud', 'fa-paint-brush', 
+    'fa-briefcase', 'fa-robot', 'fa-shield-alt', 'fa-gamepad', 'fa-tasks',
+    'fa-bullhorn', 'fa-coins'
+];
 ?>
 
 <!-- Hero Section -->
@@ -126,12 +137,20 @@ $categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY name");
     <div class="container">
         <?php if (mysqli_num_rows($courses) > 0): ?>
             <div class="row g-4">
-                <?php while ($course = mysqli_fetch_assoc($courses)): ?>
+                <?php 
+                $i = 0;
+                while ($course = mysqli_fetch_assoc($courses)): 
+                    $color = $colors[$i % count($colors)];
+                    $icon = $icons[$i % count($icons)];
+                    $i++;
+                ?>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="course-card">
-                        <div class="course-image">
-                            <img src="assets/uploads/courses/<?php echo $course['image'] ?? 'default-course.jpg'; ?>" 
-                                 alt="<?php echo htmlspecialchars($course['title']); ?>">
+                        <div class="course-image" style="background: linear-gradient(135deg, <?php echo $color; ?>, <?php echo $color; ?>dd);">
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; color: white; padding: 20px;">
+                                <i class="fas <?php echo $icon; ?>" style="font-size: 4rem; opacity: 0.9; margin-bottom: 10px;"></i>
+                                <span style="font-size: 0.8rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;"><?php echo htmlspecialchars($course['category_name'] ?? 'Course'); ?></span>
+                            </div>
                             <span class="course-level"><?php echo ucfirst($course['level']); ?></span>
                             <?php if ($course['price'] == 0): ?>
                                 <span class="course-badge free">Free</span>
