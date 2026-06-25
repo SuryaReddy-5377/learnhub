@@ -4,15 +4,15 @@ require_once 'config/database.php';
 require_once 'includes/header.php';
 
 // Get filters
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$search   = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category = isset($_GET['category']) ? intval($_GET['category']) : 0;
-$level = isset($_GET['level']) ? $_GET['level'] : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+$level    = isset($_GET['level']) ? $_GET['level'] : '';
+$sort     = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 
 // Build query
-$where = "WHERE c.status = 'published'";
+$where  = "WHERE c.status = 'published'";
 $params = [];
-$types = "";
+$types  = "";
 
 if ($search) {
     $where .= " AND (c.title LIKE ? OR c.description LIKE ?)";
@@ -21,13 +21,11 @@ if ($search) {
     $params[] = $search_param;
     $types .= "ss";
 }
-
 if ($category > 0) {
     $where .= " AND c.category_id = ?";
     $params[] = $category;
     $types .= "i";
 }
-
 if ($level) {
     $where .= " AND c.level = ?";
     $params[] = $level;
@@ -35,23 +33,18 @@ if ($level) {
 }
 
 $order = "ORDER BY c.created_at DESC";
-if ($sort === 'popular') {
-    $order = "ORDER BY c.enrolled_students DESC";
-} elseif ($sort === 'rating') {
-    $order = "ORDER BY c.rating DESC";
-} elseif ($sort === 'price_low') {
-    $order = "ORDER BY c.price ASC";
-} elseif ($sort === 'price_high') {
-    $order = "ORDER BY c.price DESC";
-}
+if ($sort === 'popular')    $order = "ORDER BY c.enrolled_students DESC";
+elseif ($sort === 'rating') $order = "ORDER BY c.rating DESC";
+elseif ($sort === 'price_low')  $order = "ORDER BY c.price ASC";
+elseif ($sort === 'price_high') $order = "ORDER BY c.price DESC";
 
-// Get courses
 $query = "SELECT c.*, u.first_name, u.last_name, cat.name as category_name,
           (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status = 'active') as enrolled_count
           FROM courses c
           JOIN users u ON c.instructor_id = u.id
           JOIN categories cat ON c.category_id = cat.id
           $where $order";
+
 $stmt = mysqli_prepare($conn, $query);
 if (!empty($params)) {
     mysqli_stmt_bind_param($stmt, $types, ...$params);
@@ -60,72 +53,59 @@ mysqli_stmt_execute($stmt);
 $courses = mysqli_stmt_get_result($stmt);
 mysqli_stmt_close($stmt);
 
-// Get categories for filter
 $categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY name");
 
-// Color palette for course cards
-$colors = [
-    '#6C3CE1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444',
-    '#8B5CF6', '#34D399', '#F472B6', '#FBBF24', '#60A5FA', '#F87171'
-];
-$icons = [
-    'fa-code', 'fa-chart-bar', 'fa-mobile-alt', 'fa-cloud', 'fa-paint-brush', 
-    'fa-briefcase', 'fa-robot', 'fa-shield-alt', 'fa-gamepad', 'fa-tasks',
-    'fa-bullhorn', 'fa-coins'
-];
+$colors = ['#6C3CE1','#EC4899','#10B981','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#34D399','#F472B6','#FBBF24','#60A5FA','#F87171'];
+$icons  = ['fa-code','fa-chart-bar','fa-mobile-alt','fa-cloud','fa-paint-brush','fa-briefcase','fa-robot','fa-shield-alt','fa-gamepad','fa-tasks','fa-bullhorn','fa-coins'];
 ?>
 
-<!-- Hero Section -->
-<section class="hero-banner py-4" data-aos="fade-up">
+<!-- Hero -->
+<section class="hero-banner py-4">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-8" data-aos="fade-right">
-                <h1 class="hero-title" style="font-size: 2.5rem;">Explore Our <span class="gradient-text">Courses</span></h1>
-                <p class="hero-text" style="font-size: 1.1rem;">Find the perfect course to advance your skills and career.</p>
+            <div class="col-lg-8">
+                <h1 class="hero-title" style="font-size:2.5rem;">Explore Our <span class="gradient-text">Courses</span></h1>
+                <p class="hero-text">Find the perfect course to advance your skills and career.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Filters Section -->
-<section data-aos="fade-up">
+<!-- Filters -->
+<section>
     <div class="container">
         <div class="row g-3 mb-4">
             <div class="col-md-4">
-                <div class="search-bar">
-                    <form action="courses.php" method="GET" class="d-flex">
-                        <input type="text" name="search" class="form-control" placeholder="Search courses..." 
-                               value="<?php echo htmlspecialchars($search); ?>">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                </div>
+                <form action="courses.php" method="GET" class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control" placeholder="Search courses..." value="<?php echo htmlspecialchars($search); ?>">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                </form>
             </div>
             <div class="col-md-3">
-                <select name="category" class="form-select" onchange="window.location.href=this.value">
+                <select class="form-select" onchange="window.location.href=this.value">
                     <option value="courses.php">All Categories</option>
                     <?php while ($cat = mysqli_fetch_assoc($categories)): ?>
-                        <option value="courses.php?category=<?php echo $cat['id']; ?>" 
-                                <?php echo $category == $cat['id'] ? 'selected' : ''; ?>>
+                        <option value="courses.php?category=<?php echo $cat['id']; ?>" <?php echo $category == $cat['id'] ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($cat['name']); ?>
                         </option>
                     <?php endwhile; ?>
                 </select>
             </div>
             <div class="col-md-2">
-                <select name="level" class="form-select" onchange="window.location.href=this.value">
+                <select class="form-select" onchange="window.location.href=this.value">
                     <option value="courses.php">All Levels</option>
-                    <option value="courses.php?level=beginner" <?php echo $level === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
-                    <option value="courses.php?level=intermediate" <?php echo $level === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
-                    <option value="courses.php?level=advanced" <?php echo $level === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+                    <option value="courses.php?level=beginner"     <?php echo $level==='beginner'?'selected':''; ?>>Beginner</option>
+                    <option value="courses.php?level=intermediate" <?php echo $level==='intermediate'?'selected':''; ?>>Intermediate</option>
+                    <option value="courses.php?level=advanced"     <?php echo $level==='advanced'?'selected':''; ?>>Advanced</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <select name="sort" class="form-select" onchange="window.location.href=this.value">
-                    <option value="courses.php?sort=newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
-                    <option value="courses.php?sort=popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
-                    <option value="courses.php?sort=rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Highest Rated</option>
-                    <option value="courses.php?sort=price_low" <?php echo $sort === 'price_low' ? 'selected' : ''; ?>>Price: Low to High</option>
-                    <option value="courses.php?sort=price_high" <?php echo $sort === 'price_high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                <select class="form-select" onchange="window.location.href=this.value">
+                    <option value="courses.php?sort=newest"     <?php echo $sort==='newest'?'selected':''; ?>>Newest</option>
+                    <option value="courses.php?sort=popular"    <?php echo $sort==='popular'?'selected':''; ?>>Most Popular</option>
+                    <option value="courses.php?sort=rating"     <?php echo $sort==='rating'?'selected':''; ?>>Highest Rated</option>
+                    <option value="courses.php?sort=price_low"  <?php echo $sort==='price_low'?'selected':''; ?>>Price: Low to High</option>
+                    <option value="courses.php?sort=price_high" <?php echo $sort==='price_high'?'selected':''; ?>>Price: High to Low</option>
                 </select>
             </div>
         </div>
@@ -133,24 +113,20 @@ $icons = [
 </section>
 
 <!-- Courses Grid -->
-<section data-aos="fade-up">
+<section class="pb-5">
     <div class="container">
         <?php if (mysqli_num_rows($courses) > 0): ?>
             <div class="row g-4">
-                <?php 
-                $i = 0;
-                while ($course = mysqli_fetch_assoc($courses)): 
+                <?php $i = 0; while ($course = mysqli_fetch_assoc($courses)):
                     $color = $colors[$i % count($colors)];
-                    $icon = $icons[$i % count($icons)];
+                    $icon  = $icons[$i % count($icons)];
                     $i++;
                 ?>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-4 col-md-6">
                     <div class="course-card">
-                        <div class="course-image" style="background: linear-gradient(135deg, <?php echo $color; ?>, <?php echo $color; ?>dd);">
-                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; color: white; padding: 20px;">
-                                <i class="fas <?php echo $icon; ?>" style="font-size: 4rem; opacity: 0.9; margin-bottom: 10px;"></i>
-                                <span style="font-size: 0.8rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;"><?php echo htmlspecialchars($course['category_name'] ?? 'Course'); ?></span>
-                            </div>
+                        <div class="course-image" style="background: linear-gradient(135deg, <?php echo $color; ?>, <?php echo $color; ?>cc); height:200px; display:flex; align-items:center; justify-content:center; position:relative; flex-direction:column; color:white;">
+                            <i class="fas <?php echo $icon; ?>" style="font-size:4rem; opacity:0.9; margin-bottom:8px;"></i>
+                            <span style="font-size:0.75rem; opacity:0.8; text-transform:uppercase; letter-spacing:1px;"><?php echo htmlspecialchars($course['category_name'] ?? 'Course'); ?></span>
                             <span class="course-level"><?php echo ucfirst($course['level']); ?></span>
                             <?php if ($course['price'] == 0): ?>
                                 <span class="course-badge free">Free</span>
@@ -168,18 +144,14 @@ $icons = [
                             </p>
                             <div class="course-meta">
                                 <span class="course-price">
-                                    <?php if ($course['price'] > 0): ?>
-                                        ₹<?php echo number_format($course['price'], 2); ?>
-                                    <?php else: ?>
-                                        Free
-                                    <?php endif; ?>
+                                    <?php echo $course['price'] > 0 ? '₹' . number_format($course['price'], 2) : 'Free'; ?>
                                 </span>
                                 <span class="course-rating">
                                     <i class="fas fa-star"></i> <?php echo number_format($course['rating'] ?? 0, 1); ?>
                                     <span class="text-muted">(<?php echo $course['enrolled_count']; ?>)</span>
                                 </span>
                             </div>
-                            <div class="d-grid gap-2">
+                            <div class="d-grid mt-3">
                                 <a href="course-details.php?id=<?php echo $course['id']; ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-eye me-1"></i>View Course
                                 </a>
@@ -191,10 +163,10 @@ $icons = [
             </div>
         <?php else: ?>
             <div class="text-center py-5">
-                <i class="fas fa-book-open" style="font-size: 4rem; color: var(--text-muted);"></i>
+                <i class="fas fa-book-open" style="font-size:4rem; color:var(--text-muted);"></i>
                 <h3 class="mt-3">No Courses Found</h3>
                 <p class="text-muted">Try adjusting your search or filters.</p>
-                <a href="courses.php" class="btn btn-primary">View All Courses</a>
+                <a href="courses.php" class="btn btn-primary mt-2">View All Courses</a>
             </div>
         <?php endif; ?>
     </div>

@@ -1,9 +1,3 @@
--- ============================================
--- LEARNHUB - E-Learning Portal Database
--- ============================================
-
-CREATE DATABASE IF NOT EXISTS learnhub_db;
-USE learnhub_db;
 
 -- Users Table
 CREATE TABLE users (

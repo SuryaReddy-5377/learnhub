@@ -900,252 +900,171 @@ body::before {
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
 }
+
 /* ============================================================
-   FOOTER SOCIAL ICONS - ONLY 3 ICONS
+   COURSE CARDS - DARK MODE FIX (MAKES BOXES BLACK)
    ============================================================ */
-
-.footer .social-icons {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
+[data-theme="dark"] .course-card {
+    background: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.footer .social-icons a {
-    display: inline-flex;
-    width: 44px;
-    height: 44px;
-    align-items: center;
-    justify-content: center;
-    background: #f1f5f9 !important;
-    border-radius: 50%;
-    color: #1A1A2E !important;
-    transition: all 0.3s ease;
-    border: 1px solid #e5e7eb !important;
-    text-decoration: none;
-    font-size: 1.1rem;
+[data-theme="dark"] .course-card .course-body {
+    background: #1a1a2e !important;
 }
 
-[data-theme="dark"] .footer .social-icons a {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+[data-theme="dark"] .course-card .course-title a {
+    color: #F8FAFC !important;
 }
 
-.footer .social-icons a:hover {
-    background: var(--gradient-primary) !important;
-    color: white !important;
-    border-color: transparent !important;
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 25px rgba(108, 60, 225, 0.3) !important;
+[data-theme="dark"] .course-card .course-instructor {
+    color: #94A3B8 !important;
 }
 
-[data-theme="dark"] .footer .social-icons a:hover {
-    background: var(--gradient-primary) !important;
-    color: white !important;
+[data-theme="dark"] .course-card .course-meta {
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
+
+[data-theme="dark"] .course-card .course-price {
+    color: #8B5CF6 !important;
+}
+
 /* ============================================================
-   COURSE IMAGES FIX
+   CATEGORY CARDS - DARK MODE FIX
    ============================================================ */
-
-.course-image {
-    height: 200px;
-    overflow: hidden;
-    position: relative;
-    background: linear-gradient(135deg, #6C3CE1, #EC4899);
+[data-theme="dark"] .category-card {
+    background: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.course-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+[data-theme="dark"] .category-card h6 {
+    color: #F8FAFC !important;
 }
 
-.course-image img[src*="default-course.jpg"] {
-    object-fit: contain;
-    padding: 20px;
-    background: linear-gradient(135deg, #f0f0ff, #e8e0f0);
-}
-
-.course-level {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: white;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-}
-
-.course-badge.free {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: white;
-    background: linear-gradient(135deg, #10B981, #059669);
-}
 /* ============================================================
-   COURSE IMAGES - FAST LOADING
+   STAT CARDS - DARK MODE FIX
    ============================================================ */
-
-.course-image {
-    height: 200px;
-    overflow: hidden;
-    position: relative;
-    background: linear-gradient(135deg, #6C3CE1, #EC4899);
+[data-theme="dark"] .stat-card {
+    background: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.course-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+[data-theme="dark"] .stat-card h3 {
+    color: #F8FAFC !important;
 }
 
-.course-image img[src*="default-course.jpg"] {
-    object-fit: contain;
-    padding: 30px;
-    background: linear-gradient(135deg, #f5f0ff, #e8e0f0);
+[data-theme="dark"] .stat-card small {
+    color: #94A3B8 !important;
 }
 
-.course-level {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: white;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-}
-
-.course-badge.free {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: white;
-    background: linear-gradient(135deg, #10B981, #059669);
-}
 /* ============================================================
-   COURSE CARDS - NO IMAGES NEEDED
+   CARD - DARK MODE FIX
    ============================================================ */
-
-.course-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
-    height: 100%;
-    box-shadow: var(--shadow);
+[data-theme="dark"] .card {
+    background: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.course-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
+[data-theme="dark"] .card .card-body {
+    background: #1a1a2e !important;
 }
 
-.course-image {
-    height: 180px;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+[data-theme="dark"] .card .card-title {
+    color: #F8FAFC !important;
 }
 
-.course-image i {
-    font-size: 4rem;
-    opacity: 0.9;
+[data-theme="dark"] .card .card-text {
+    color: #94A3B8 !important;
 }
 
-.course-level {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: white;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
+/* ============================================================
+   FORM CARD - DARK MODE FIX
+   ============================================================ */
+[data-theme="dark"] .form-card {
+    background: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.course-badge.free {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: white;
-    background: linear-gradient(135deg, #10B981, #059669);
+[data-theme="dark"] .form-card .card-body {
+    background: #1a1a2e !important;
+}
+/* ===== DARK MODE WHITE BOX FIX - ADD TO BOTTOM OF style.css ===== */
+
+/* Remove white backgrounds from Bootstrap elements in dark mode */
+[data-theme="dark"] .form-select {
+    background-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: #F8FAFC !important;
 }
 
-.course-body {
-    padding: 20px;
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-body {
+    background: rgba(10,10,26,0.85) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    color: #F8FAFC !important;
 }
 
-.course-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 5px;
+[data-theme="dark"] .course-card,
+[data-theme="dark"] .course-body,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .category-card,
+[data-theme="dark"] .form-card {
+    background: rgba(10,10,26,0.85) !important;
+    border-color: rgba(255,255,255,0.08) !important;
 }
 
-.course-title a {
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: all 0.3s ease;
+/* Fix Bootstrap table white background */
+[data-theme="dark"] table,
+[data-theme="dark"] .table {
+    background: rgba(10,10,26,0.85) !important;
+    color: #F8FAFC !important;
+}
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table thead th {
+    background: transparent !important;
+    color: #F8FAFC !important;
+    border-color: rgba(255,255,255,0.08) !important;
 }
 
-.course-title a:hover {
-    color: var(--primary);
+/* Fix dropdown white boxes */
+[data-theme="dark"] .dropdown-menu {
+    background: rgba(10,10,26,0.95) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+[data-theme="dark"] .dropdown-item {
+    color: #F8FAFC !important;
+}
+[data-theme="dark"] .dropdown-item:hover {
+    background: rgba(108,60,225,0.2) !important;
 }
 
-.course-instructor {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 10px;
+/* Fix modal white boxes */
+[data-theme="dark"] .modal-content {
+    background: rgba(10,10,26,0.97) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+    color: #F8FAFC !important;
+}
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: rgba(255,255,255,0.08) !important;
 }
 
-.course-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+/* Fix list groups */
+[data-theme="dark"] .list-group-item {
+    background: rgba(10,10,26,0.85) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    color: #F8FAFC !important;
 }
 
-.course-price {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--primary);
+/* Fix badge/pill white */
+[data-theme="dark"] .badge.bg-light {
+    background: rgba(255,255,255,0.1) !important;
+    color: #F8FAFC !important;
 }
 
-.course-rating {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.course-rating i {
-    color: #F59E0B;
+/* Fix any remaining white divs */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light {
+    background: rgba(10,10,26,0.85) !important;
 }
