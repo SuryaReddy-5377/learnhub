@@ -4,9 +4,8 @@
 
 ## 🌐 Live Demo
 
-🔗 **[View Live Site](http://learnhub-surya.rf.gd/)** *(replace with your actual URL)*  
-📁 **[GitHub Repository](https://github.com/SuryaReddy-5377/learnhub.git)** *(replace with your actual repo URL)*
-
+🔗 **[View Live Site](http://learnhub-surya.rf.gd/)** 
+📁 **[GitHub Repository](https://github.com/SuryaReddy-5377/learnhub.git)** 
 ---
 
 ## ✨ Features
